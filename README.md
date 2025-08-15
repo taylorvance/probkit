@@ -84,6 +84,14 @@ Run all tests with:
 python -m unittest discover tests -v
 ```
 
+## Deployment (notes for Taylor)
+PyPI is set up to receive releases from the `main` branch or when tagged with `v*`. This is accomplished using PyPI OIDC and GitHub Actions.
+Pushing to main will create a new dev release with automatic version bump.
+Creating a `v*` tag will create a production release using that version number.
+```bash
+git tag v0.1.0 && git push --tags
+```
+
 ## Contributing
 Pull requests and suggestions welcome! Open an issue or PR on GitHub.
 
