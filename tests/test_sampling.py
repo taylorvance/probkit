@@ -1,9 +1,7 @@
 import unittest
 from probkit import sampling
 
-
 class TestSampling(unittest.TestCase):
-    
     def test_sample_ntsig(self):
         """Test sample_ntsig returns values in [0,1]"""
         for k in [-0.5, 0, 0.5]:
@@ -73,7 +71,6 @@ class TestSampling(unittest.TestCase):
             self.assertLessEqual(val_ntsig, 1)
             self.assertGreaterEqual(val_nthsig, 0)
             self.assertLessEqual(val_nthsig, 1)
-
 
 if __name__ == '__main__':
     unittest.main()

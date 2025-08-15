@@ -25,12 +25,9 @@ class TestProbability(unittest.TestCase):
         self.assertEqual(modified_probability(0.42, 0.0001, 0), 1)
 
     def test_modified_probability_errors(self):
-        with self.assertRaises(ValueError):
-            modified_probability(-1, 1)
-        with self.assertRaises(ValueError):
-            modified_probability(2, 1)
-        with self.assertRaises(ValueError):
-            modified_probability(0.5, -1)
+        with self.assertRaises(ValueError): modified_probability(-0.5, 1)
+        with self.assertRaises(ValueError): modified_probability(1.5, 1)
+        with self.assertRaises(ValueError): modified_probability(0.5, -1)
 
 if __name__ == '__main__':
     unittest.main()
