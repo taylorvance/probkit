@@ -24,7 +24,8 @@ y = ntsig(k=0.5, x=0.3)  # k controls steepness
 y = biased_curve(k=0.2, a=10, b=100, x=0.7)  # From (0,10) to (1,100)
 
 # Modify probability with a ratio
-new_prob = modified_probability(0.3, ratio=1.5)  # Scale 30% by 1.5x
+new_prob = modified_probability(0.3, 1.5)  # Scale 30% by 1.5x
+new_prob = modified_probability(0.3, 3, 2)  # Scale 30% by ratio 3/2
 ```
 
 ### Random Sampling
@@ -50,7 +51,7 @@ samples = [sampling.sample_ntsig(0.3) for _ in range(1000)]
 - **`biased_curve(k, a, b, x)`** - Custom curve between points (0,a) and (1,b) with bias k
 
 ### Probability Functions  
-- **`modified_probability(base, ratio=r)`** - Scale probability by ratio with proper saturation
+- **`modified_probability(k, a, b=None)`** - Scale probability by ratio `a` (or `a/b` if b provided) with proper saturation
 
 ### Random Sampling
 - **`probkit.sampling.seed(value)`** - Set seed for reproducible random sampling
