@@ -42,7 +42,7 @@ class ProbkitRNG(Random):
         r.setstate(self.getstate())
         return r
 
-    def spawn(self, seed_value:int|float|str|None) -> Self:
+    def spawn(self, seed_value:int|float|str|None=None) -> Self:
         """Create an independent seeded RNG instance."""
         r = type(self)()
         r.seed(seed_value)
@@ -55,7 +55,7 @@ class ProbkitRNG(Random):
         yield self.fork()
 
     @contextmanager
-    def spawned(self, seed_value:int|float|str|None) -> Iterator[Self]:
+    def spawned(self, seed_value:int|float|str|None=None) -> Iterator[Self]:
         """Context manager yielding a spawned RNG instance."""
         yield self.spawn(seed_value)
 
