@@ -30,20 +30,31 @@ new_prob = modified_probability(0.3, 3, 2)  # Scale 30% by ratio 3/2
 
 ### Random Sampling
 ```python
-import probkit.sampling
+from probkit.sampling import rng, seed
 
 # Optionally set seed for reproducible results
-sampling.seed(42)
-
-# Generate random values
-random_val = sampling.random()  # Random float in [0,1)
+seed(42)
 
 # Sample from curves with random x values
-sample = sampling.sample_ntsig(k=0.5)
-sample = sampling.sample_biased_curve(k=0.2, a=10, b=100)
+sample = rng.ntsig(k=0.5)
+sample = rng.biased_curve(k=0.2, a=10, b=100)
 
 # Generate multiple samples
-samples = [sampling.sample_ntsig(0.3) for _ in range(1000)]
+samples = [rng.ntsig(0.3) for _ in range(1000)]
+
+# Generate random values using the singleton RNG
+random_val = rng.random()  # Random float in [0,1)
+choices = rng.choices(['a', 'b', 'c'], k=5)  # All random.Random methods available
+
+# Independent RNG instances for parallel work
+fork1 = rng.fork()  # Clone current state
+spawn1 = rng.spawn(123)  # Fresh RNG with seed 123
+
+# Context managers that don't affect main RNG
+with rng.forked() as r:
+    values = [r.ntsig(0.5) for _ in range(10)]
+with rng.spawned(456) as r:
+    reproducible_values = [r.nthsig(0.3) for _ in range(10)]
 ```
 
 ## API Reference
@@ -57,11 +68,15 @@ samples = [sampling.sample_ntsig(0.3) for _ in range(1000)]
 - **`modified_probability(k, a, b=None)`** - Scale probability by ratio `a` (or `a/b` if b provided) with proper saturation
 
 ### Random Sampling
-- **`probkit.sampling.seed(value)`** - Set seed for reproducible random sampling
-- **`probkit.sampling.random()`** - Generate random float in [0,1) using module-level RNG
-- **`probkit.sampling.sample_ntsig(k)`** - Sample from ntsig with random x
-- **`probkit.sampling.sample_nthsig(k)`** - Sample from nthsig with random x  
-- **`probkit.sampling.sample_biased_curve(k, a, b)`** - Sample from biased_curve with random x
+- **`probkit.sampling.rng`** - Singleton RNG with all `random.Random` methods plus probkit helpers
+- **`probkit.sampling.seed(value)`** - Set seed for the singleton RNG
+- **`rng.ntsig(k)`** - Sample from ntsig with random x
+- **`rng.nthsig(k)`** - Sample from nthsig with random x  
+- **`rng.biased_curve(k, a, b)`** - Sample from biased_curve with random x
+- **`rng.fork()`** - Clone current RNG state into independent instance
+- **`rng.spawn(seed)`** - Create fresh RNG instance with specified seed
+- **`rng.forked()`** - Context manager yielding forked RNG (doesn't affect main state)
+- **`rng.spawned(seed)`** - Context manager yielding spawned RNG (doesn't affect main state)
 
 ### Utilities
 - **`clamp(val, min_val, max_val)`** - Constrain value to range

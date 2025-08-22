@@ -1,40 +1,68 @@
 """
 Random sampling functions for probkit curves and probability functions.
 
-These functions provide convenient wrappers around the pure functions in probkit,
-automatically generating random x values in [0,1] for sampling from curves.
-
-Uses a module-level RNG for performance. Use seed() to control randomness.
+- Exposes a singleton RNG (`rng`) that inherits all of `random.Random` APIs (random, choices, sample, shuffle, etc.)
+- Adds probkit helpers on the same object: rng.ntsig, rng.nthsig, rng.biased_curve
+- Deterministic control:
+    - seed(x): set global sequence for the whole run
+    - rng.fork() and rng.spawn(x): create independent RNG instances
+    - rng.forked() and rng.spawned(x): context managers yielding independent RNG instances
 """
 
-__all__ = ["seed", "sample_ntsig", "sample_nthsig", "sample_biased_curve"]
-
 from random import Random
+from typing import Self
+from collections.abc import Iterator
+from contextlib import contextmanager
+
 from . import curves
 
-# Module-level RNG - created once, reused for all calls
-_rng:Random = Random()
+__all__ = ["ProbkitRNG", "rng", "seed"]
 
-def seed(seed_value:int|float|str|None=None) -> None:
-    """Set the seed for probkit's sampling functions.
-    
-    Args:
-        seed_value: Seed for the random number generator. If None, uses system time.
-    """
-    _rng.seed(seed_value)
 
-def random() -> float:
-    """Generate a random float in the range [0, 1), using the module-level RNG."""
-    return _rng.random()
+class ProbkitRNG(Random):
+    """Singleton-friendly RNG with probkit helpers."""
 
-def sample_ntsig(k:float) -> float:
-    """Sample ntsig with random x."""
-    return curves.ntsig(k, _rng.random())
+    # --- probkit helpers ---
+    def ntsig(self, k:float)->float:
+        """Sample ntsig with random x."""
+        return curves.ntsig(k, self.random())
 
-def sample_nthsig(k:float) -> float:
-    """Sample nthsig with random x."""
-    return curves.nthsig(k, _rng.random())
+    def nthsig(self, k:float)->float:
+        """Sample nthsig with random x."""
+        return curves.nthsig(k, self.random())
 
-def sample_biased_curve(k:float, a:float, b:float) -> float:
-    """Sample biased_curve with random x."""
-    return curves.biased_curve(k, a, b, _rng.random())
+    def biased_curve(self, k:float, a:float, b:float)->float:
+        """Sample biased_curve with random x."""
+        return curves.biased_curve(k, a, b, self.random())
+
+    # --- RNG factories ---
+    def fork(self) -> Self:
+        """Clone the current state into an independent RNG instance."""
+        r = type(self)()
+        r.setstate(self.getstate())
+        return r
+
+    def spawn(self, seed_value:int|float|str|None) -> Self:
+        """Create an independent seeded RNG instance."""
+        r = type(self)()
+        r.seed(seed_value)
+        return r
+
+    # --- Context helpers which do NOT drift global state ---
+    @contextmanager
+    def forked(self) -> Iterator[Self]:
+        """Context manager yielding a forked RNG instance."""
+        yield self.fork()
+
+    @contextmanager
+    def spawned(self, seed_value:int|float|str|None) -> Iterator[Self]:
+        """Context manager yielding a spawned RNG instance."""
+        yield self.spawn(seed_value)
+
+
+# --- Singleton + convenience seed ---
+rng = ProbkitRNG()
+
+def seed(seed_value:int|float|str|None=None)->None:
+    """Set the seed for the singleton RNG."""
+    rng.seed(seed_value)
