@@ -35,6 +35,9 @@ import probkit.sampling
 # Optionally set seed for reproducible results
 sampling.seed(42)
 
+# Generate random values
+random_val = sampling.random()  # Random float in [0,1)
+
 # Sample from curves with random x values
 sample = sampling.sample_ntsig(k=0.5)
 sample = sampling.sample_biased_curve(k=0.2, a=10, b=100)
@@ -55,6 +58,7 @@ samples = [sampling.sample_ntsig(0.3) for _ in range(1000)]
 
 ### Random Sampling
 - **`probkit.sampling.seed(value)`** - Set seed for reproducible random sampling
+- **`probkit.sampling.random()`** - Generate random float in [0,1) using module-level RNG
 - **`probkit.sampling.sample_ntsig(k)`** - Sample from ntsig with random x
 - **`probkit.sampling.sample_nthsig(k)`** - Sample from nthsig with random x  
 - **`probkit.sampling.sample_biased_curve(k, a, b)`** - Sample from biased_curve with random x

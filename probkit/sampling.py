@@ -13,15 +13,19 @@ from random import Random
 from . import curves
 
 # Module-level RNG - created once, reused for all calls
-_rng = Random()
+_rng:Random = Random()
 
-def seed(seed_value=None):
+def seed(seed_value:int|float|str|None=None) -> None:
     """Set the seed for probkit's sampling functions.
     
     Args:
         seed_value: Seed for the random number generator. If None, uses system time.
     """
     _rng.seed(seed_value)
+
+def random() -> float:
+    """Generate a random float in the range [0, 1), using the module-level RNG."""
+    return _rng.random()
 
 def sample_ntsig(k:float) -> float:
     """Sample ntsig with random x."""
