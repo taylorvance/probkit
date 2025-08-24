@@ -15,7 +15,7 @@ def ntsig(k:float, x:float) -> float:
     Neutral k is linear between (0,0) and (1,1).
     Positive k is steep/swingy (sigmoid curve), bringing all values of y toward either 0 (for x<0.5) or 1 (for x>0.5).
 
-    https://www.desmos.com/calculator/2hkedvscyv
+    https://www.desmos.com/calculator/5ihwxrjbne
 
     Args:
         k (float): Must be in range [-1,1]. The shape (steepness/swinginess) of the curve.
@@ -44,7 +44,7 @@ def nthsig(k:float, x:float) -> float:
     Neutral k is linear between (0,0) and (1,1).
     Positive k is concave, bringing all values of y toward 1.
 
-    https://www.desmos.com/calculator/2hkedvscyv
+    https://www.desmos.com/calculator/5ihwxrjbne
 
     Args:
         k (float): Must be in range [-1,1]. The shape of the curve.
@@ -70,7 +70,7 @@ def biased_curve(k:float, a:float, b:float, x:float) -> float:
     Neutral k is unbiased, linear between (0,a) and (1,b).
     Positive k favors b, bending the knee of the curve toward (0,b).
 
-    https://www.desmos.com/calculator/2hkedvscyv
+    https://www.desmos.com/calculator/5ihwxrjbne
 
     Args:
         k (float): Changes the shape of the curve so that all y values move toward either a (when k is negative), b (when k is positive), or neither (when k is 0).
