@@ -1,10 +1,10 @@
 """
 Random sampling functions for probkit curves and probability functions.
 
-- Exposes a singleton RNG (`rng`) that inherits all of `random.Random` APIs (random, choices, sample, shuffle, etc.)
+- Exposes a singleton RNG (`rng`) that inherits all of `random.Random` APIs (seed, random, choices, sample, shuffle, etc.)
 - Adds probkit helpers on the same object: rng.ntsig, rng.nthsig, rng.biased_curve
 - Deterministic control:
-    - seed(x): set global sequence for the whole run
+    - rng.seed(x): set global sequence for the whole run
     - rng.fork() and rng.spawn(x): create independent RNG instances
     - rng.forked() and rng.spawned(x): context managers yielding independent RNG instances
 """
@@ -16,7 +16,7 @@ from contextlib import contextmanager
 
 from . import curves
 
-__all__ = ["ProbkitRNG", "rng", "seed"]
+__all__ = ["ProbkitRNG", "rng"]
 
 
 class ProbkitRNG(Random):
@@ -60,9 +60,5 @@ class ProbkitRNG(Random):
         yield self.spawn(seed_value)
 
 
-# --- Singleton + convenience seed ---
+# --- Singleton RNG ---
 rng = ProbkitRNG()
-
-def seed(seed_value:int|float|str|None=None)->None:
-    """Set the seed for the singleton RNG."""
-    rng.seed(seed_value)

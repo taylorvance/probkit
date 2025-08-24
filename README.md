@@ -30,10 +30,10 @@ new_prob = modified_probability(0.3, 3, 2)  # Scale 30% by ratio 3/2
 
 ### Random Sampling
 ```python
-from probkit.sampling import rng, seed
+from probkit.sampling import rng
 
 # Optionally set seed for reproducible results
-seed(42)
+rng.seed(42)
 
 # Sample from curves with random x values
 sample = rng.ntsig(k=0.5)
@@ -69,7 +69,6 @@ with rng.spawned(456) as r:
 
 ### Random Sampling
 - **`probkit.sampling.rng`** - Singleton RNG with all `random.Random` methods plus probkit helpers
-- **`probkit.sampling.seed(value)`** - Set seed for the singleton RNG
 - **`rng.ntsig(k)`** - Sample from ntsig with random x
 - **`rng.nthsig(k)`** - Sample from nthsig with random x  
 - **`rng.biased_curve(k, a, b)`** - Sample from biased_curve with random x

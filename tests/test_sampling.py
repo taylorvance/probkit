@@ -1,5 +1,5 @@
 import unittest
-from probkit.sampling import rng, seed
+from probkit.sampling import rng
 
 class TestSampling(unittest.TestCase):
     def test_rng_has_random_methods(self):
@@ -19,17 +19,17 @@ class TestSampling(unittest.TestCase):
 
     def test_random_reproducibility_with_seed(self):
         """Test that seeding makes random() results reproducible"""
-        seed(42)
+        rng.seed(42)
         values1 = [rng.random() for _ in range(5)]
 
-        seed(42)
+        rng.seed(42)
         values2 = [rng.random() for _ in range(5)]
 
         self.assertEqual(values1, values2)
 
     def test_random_different_values_without_seed(self):
         """Test that consecutive random() calls return different values"""
-        seed(None)  # Reset to unpredictable seed
+        rng.seed(None)  # Reset to unpredictable seed
         values = [rng.random() for _ in range(50)]
 
         # Very unlikely all 50 values are identical
@@ -38,21 +38,21 @@ class TestSampling(unittest.TestCase):
 
     def test_random_uses_module_rng(self):
         """Test that random() uses the same RNG as other sampling functions"""
-        seed(123)
+        rng.seed(123)
         random_val = rng.random()
 
-        seed(123)
+        rng.seed(123)
         # Skip one random call (equivalent to the random() call above)
         rng.random()
         sample_val = rng.ntsig(0.5)
 
-        seed(123)
+        rng.seed(123)
         # Now get the second random value directly
         rng.random()  # First call
         expected_x = rng.random()  # Second call - this is what ntsig should use
 
         # Reset and verify
-        seed(123)
+        rng.seed(123)
         actual_random = rng.random()
         self.assertEqual(actual_random, random_val)
 
@@ -83,31 +83,22 @@ class TestSampling(unittest.TestCase):
 
     def test_seed_reproducibility(self):
         """Test that seeding makes results reproducible"""
-        seed(42)
+        rng.seed(42)
         values1 = [rng.ntsig(0.5) for _ in range(5)]
 
-        seed(42)
+        rng.seed(42)
         values2 = [rng.ntsig(0.5) for _ in range(5)]
 
         self.assertEqual(values1, values2)
 
     def test_different_values_without_seed(self):
         """Test that consecutive calls return different values"""
-        seed(None)  # Reset to unpredictable seed
+        rng.seed(None)  # Reset to unpredictable seed
         values = [rng.ntsig(0.5) for _ in range(10)]
 
         # Very unlikely all 10 values are identical
         unique_values = set(values)
         self.assertGreater(len(unique_values), 1)
-
-    def test_seed_function_exists(self):
-        """Test that seed function is available and callable"""
-        self.assertTrue(hasattr(seed, '__call__'))
-        self.assertTrue(callable(seed))
-
-        # Should not raise errors
-        seed(123)
-        seed(None)
 
     def test_edge_case_k_values(self):
         """Test with edge case k values"""
@@ -128,10 +119,10 @@ class TestSampling(unittest.TestCase):
 
     def test_fork(self):
         """Test fork creates independent RNG with same state"""
-        seed(42)
+        rng.seed(42)
         original_val = rng.random()
         
-        seed(42)
+        rng.seed(42)
         rng.random()  # Advance to same state as original_val call above
         forked_rng = rng.fork()  # Fork after advancing
         forked_val = forked_rng.random()  # Should get next value
@@ -156,10 +147,10 @@ class TestSampling(unittest.TestCase):
 
     def test_forked_context_manager(self):
         """Test forked context manager doesn't affect main RNG"""
-        seed(42)
+        rng.seed(42)
         main_before = rng.random()
         
-        seed(42)
+        rng.seed(42)
         rng.random()  # Advance to same state
         
         with rng.forked() as r:
@@ -172,14 +163,14 @@ class TestSampling(unittest.TestCase):
 
     def test_spawned_context_manager(self):
         """Test spawned context manager doesn't affect main RNG"""
-        seed(42)
+        rng.seed(42)
         main_before = rng.random()
         
         with rng.spawned(123) as r:
             context_val = r.random()
         
         # Main RNG should be unaffected
-        seed(42)
+        rng.seed(42)
         main_after = rng.random()
         
         self.assertEqual(main_before, main_after)
